@@ -5,8 +5,8 @@
 //                                                       |___/___/\____/  
 //----------------------------------------------------------------------------
 
-#include "mathlib/vec4.h"
-#include "mathlib/mat4.h"
+#include "vec4.h"
+#include "mat4.h"
 
 #pragma region Constructors
   Mat3::Mat3() {

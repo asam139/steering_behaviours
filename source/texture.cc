@@ -145,7 +145,7 @@ void Texture::setAlpha(const uint8_t alpha) const {
 
 void Texture::renderText(const uint32_t x, const uint32_t y, const SDL_Rect* clip, const float angle, const SDL_Point* center, const SDL_RendererFlip flip) const {
   SDL_Renderer* renderer = Window::instance().getRenderer();
-  SDL_Rect renderQuad = { x, y, width_, height_ };
+  SDL_Rect renderQuad = {static_cast<int>(x), static_cast<int>(y), width_, height_ };
 
   if (clip) {
     renderQuad.w = clip->w;

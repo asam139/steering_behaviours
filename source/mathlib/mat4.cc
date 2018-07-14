@@ -5,7 +5,7 @@
 //                                                       |___/___/\____/  
 //----------------------------------------------------------------------------
 
-#include "mathlib\mat4.h"
+#include "mat4.h"
 
 #include <cassert>
 #define _USE_MATH_DEFINES

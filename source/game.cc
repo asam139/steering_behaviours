@@ -55,7 +55,8 @@ void Game::start() {
       const float fps = 1000.0f / (fps_time_acc / 100.0f);
       const float ratio = (float)render_loops / (float)update_loops;
       char text[255];
-      sprintf_s(text, "%d RFPS      %d UFPS", (uint32_t)fps, (uint32_t)(fps / ratio));
+      sprintf(text, "%d RFPS      %d UFPS", (uint32_t)fps, (uint32_t)(fps / ratio));
+      //sprintf_s(text, "%d RFPS      %d UFPS", (uint32_t)fps, (uint32_t)(fps / ratio));
       fps_sprite_.loadFromRenderedText(text, SDL_Color FOREGROUND_COLOR, font_, true);
       fps_sprite_.setVisible(true);
 

@@ -5,7 +5,7 @@
 //                                                       |___/___/\____/
 //----------------------------------------------------------------------------
 
-#include "mathlib\vec2.h"
+#include "vec2.h"
 
 #include <cassert>
 #define _USE_MATH_DEFINES
