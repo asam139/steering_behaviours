@@ -44,17 +44,23 @@ void SceneSeek::handleKeyEvent(const SDL_Keycode key) {
     case SDLK_1:
       agent_.setSteering(Body::Steering::Direct_Seek);
       printf("Behavior Of Agent Changed To Direct Seek\n");
-    break;
+      break;
     case SDLK_2:
       agent_.setSteering(Body::Steering::Seek);
       printf("Behavior Of Agent Changed To Seek\n");
+          break;
     case SDLK_3:
       agent_.setSteering(Body::Steering::Direct_Flee);
           printf("Behavior Of Agent Changed To Direct Flee\n");
+          break;
     case SDLK_4:
       agent_.setSteering(Body::Steering::Flee);
           printf("Behavior Of Agent Changed To Flee\n");
-    break;
+          break;
+    case SDLK_5:
+      agent_.setSteering(Body::Steering::Direct_Arrive);
+          printf("Behavior Of Agent Changed To Direct Arrive\n");
+          break;
   }
 }
 

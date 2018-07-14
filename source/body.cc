@@ -28,6 +28,7 @@ void Body::update(const uint32_t dt) {
     case Steering::Seek: update_seek(dt); break;
     case Steering::Direct_Flee: update_direct_flee(dt); break;
     case Steering::Flee: update_flee(dt); break;
+    case Steering::Direct_Arrive: update_direct_arrive(dt); break;
     default: update_direct_seek(dt); break;
   }
 
@@ -48,7 +49,9 @@ void Body::setTarget(const Vec2& target) {
 }
 
 void Body::update_direct_seek(const uint32_t dt) {
-  velocity_ = (target_ - position_).normalized() * max_velocity_ * dt;
+    float deltaTime = dt / TICKS_PER_SECOND;
+
+  velocity_ = (target_ - position_).normalized() * max_velocity_ * deltaTime;
   position_ = position_ + velocity_;
 
   dd.green.pos = position_;
@@ -63,48 +66,86 @@ void Body::update_direct_seek(const uint32_t dt) {
 }
 
 void Body::update_seek(const uint32_t dt) {
-  const Vec2 desired_velocity = (target_ - position_).normalized() * max_velocity_ * dt;
-  const Vec2 steering = (desired_velocity - velocity_).trunc(max_steering_ * dt) / mass_;
-  velocity_ = (velocity_ + steering).trunc(max_velocity_ * dt);
-  position_ = position_ + velocity_;
+    float deltaTime = dt / TICKS_PER_SECOND;
 
-  dd.green.pos = position_;
-  dd.green.v = velocity_ * 25.0f;
+    const Vec2 desired_velocity = (target_ - position_).normalized() * max_velocity_ * deltaTime;
+    const Vec2 steering = (desired_velocity - velocity_).trunc(max_steering_ * deltaTime) / mass_;
+    velocity_ = (velocity_ + steering).trunc(max_velocity_ * deltaTime);
+    position_ = position_ + velocity_;
 
-  dd.blue.pos = position_;
-  dd.blue.v = desired_velocity * 25.0f;
+    dd.green.pos = position_;
+    dd.green.v = velocity_ * 25.0f;
 
-  dd.red.pos = position_ + (velocity_ * 25.0f);
-  dd.red.v = steering * 100.0f;
+    dd.blue.pos = position_;
+    dd.blue.v = desired_velocity * 25.0f;
+
+    dd.red.pos = position_ + (velocity_ * 25.0f);
+    dd.red.v = steering * 100.0f;
 }
 
 void Body::update_direct_flee(const uint32_t dt) {
-  velocity_ = (position_ - target_).normalized() * max_velocity_ * dt;
-  position_ = position_ + velocity_;
+    float deltaTime = dt / TICKS_PER_SECOND;
 
-  dd.green.pos = position_;
-  dd.green.v = velocity_ * 25.0f;
+    velocity_ = (position_ - target_).normalized() * max_velocity_ * deltaTime;
+    position_ = position_ + velocity_;
 
-  dd.red.pos = position_;
-  dd.red.v = Vec2 (0.0f, 0.0f);
+    dd.green.pos = position_;
+    dd.green.v = velocity_ * 25.0f;
 
-  dd.blue.pos = position_;
-  dd.blue.v = Vec2(0.0f, 0.0f);
+    dd.red.pos = position_;
+    dd.red.v = Vec2 (0.0f, 0.0f);
+
+    dd.blue.pos = position_;
+    dd.blue.v = Vec2(0.0f, 0.0f);
 }
-
 
 void Body::update_flee(const uint32_t dt) {
-  const Vec2 desired_velocity = (position_ - target_).normalized() * max_velocity_ * dt;
-  const Vec2 steering = (desired_velocity - velocity_).trunc(max_steering_ * dt) / mass_;
-  velocity_ = (velocity_ + steering).trunc(max_velocity_ * dt);
-  position_ = position_ + velocity_;
+    float deltaTime = dt / TICKS_PER_SECOND;
+    const Vec2 desired_velocity = (position_ - target_).normalized() * max_velocity_ * deltaTime;
+    const Vec2 steering = (desired_velocity - velocity_).trunc(max_steering_ * deltaTime) / mass_;
+    velocity_ = (velocity_ + steering).trunc(max_velocity_ * deltaTime);
+    position_ = position_ + velocity_;
+    rotation_ = 0.0f; //no rotation
 
-  dd.green.pos = position_;
-  dd.green.v = velocity_ * 25.0f;
+    dd.green.pos = position_;
+    dd.green.v = velocity_ * 25.0f;
 
-  dd.blue.pos = position_;
-  dd.blue.v = desired_velocity * 25.0f;
+    dd.blue.pos = position_;
+    dd.blue.v = desired_velocity * 25.0f;
 
-  dd.red.pos = position_ + (velocity_ * 25.0f);
-  dd.red.v = steering * 100.0f;
+    dd.red.pos = position_ + (velocity_ * 25.0f);
+    dd.red.v = steering * 100.0f;
 }
+
+void Body::update_direct_arrive(const uint32_t dt){
+    float deltaTime = dt / TICKS_PER_SECOND;
+    printf("Dt [%d]\n", deltaTime);
+
+    //direction to the target
+    velocity_ = target_ - position_;
+    if (velocity_.length2() < sq_radius_) { //inside the radius
+      velocity_.x() = 0.0f; //no velocity
+      velocity_.y() = 0.0f;
+
+    } else {
+        velocity_ /= time_to_target_ * dt; //velocity adjusted to time
+        if (velocity_.length() > max_velocity_ ) { //max out
+            //normalized direction to max speed
+            velocity_ = velocity_.normalized() * max_velocity_;
+        }
+    }
+
+    position_ = position_ + velocity_;
+    rotation_ = 0.0f; //no rotation*/
+
+    dd.green.pos = position_;
+    dd.green.v = velocity_ * 25.0f;
+
+    dd.red.pos = position_;
+    dd.red.v = Vec2 (0.0f, 0.0f);
+
+    dd.blue.pos = position_;
+    dd.blue.v = Vec2(0.0f, 0.0f);
+}
+
+

@@ -25,7 +25,9 @@ class Body {
         Direct_Seek,
         Seek,
         Direct_Flee,
-        Flee
+        Flee,
+        Direct_Arrive,
+        Arrive
     };
 
     Body() {};
@@ -42,6 +44,8 @@ class Body {
     void update_seek(const uint32_t);
     void update_direct_flee(const uint32_t dt);
     void update_flee(const uint32_t dt);
+    void update_direct_arrive(const uint32_t dt);
+    void update_arrive(const uint32_t dt);
 
     Sprite sprite_;
     Type type_;
@@ -52,9 +56,13 @@ class Body {
 
     Vec2 velocity_{ 0.0f, 0.0f };
     float mass_ = 1.0f;
+    float rotation_ = 0.0f;
 
-    const float max_velocity_ { 0.1f };
-    const float max_steering_ { 0.005f };
+    const float max_velocity_ { 5.f };
+    const float max_steering_ { 0.1f };
+
+    const float sq_radius_ { 5.0f }; //squared radius
+    const float time_to_target_ { 1.f };
 
     struct {
       struct {
