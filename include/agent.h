@@ -21,7 +21,7 @@ class Agent {
     ~Agent() {};
 
     void init(World* world, const Body::Type type);
-    void update(const uint32_t dt);
+    void update(const float dt);
     void render() const;
     void shutdown();
 

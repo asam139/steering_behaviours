@@ -14,6 +14,6 @@ void Mind::init(World* world, Body* body) {
   body_ = body;
 }
 
-void Mind::update(const uint32_t dt) {
+void Mind::update(const float dt) {
   body_->setTarget(world_->getWaypoint());
 }

@@ -18,7 +18,7 @@ void Agent::shutdown() {
   world_ = nullptr;
 }
 
-void Agent::update(const uint32_t dt) {
+void Agent::update(const float dt) {
   mind_.update(dt);
   body_.update(dt);
 }

@@ -23,7 +23,7 @@ class Game {
     void shutdown();
   private:
     void handleInput();
-    void update(const uint32_t dt);
+    void update(const float dt);
     void render();
 
     void createScenes();

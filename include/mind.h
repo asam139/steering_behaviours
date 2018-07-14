@@ -19,7 +19,7 @@ class Mind {
     ~Mind() {};
 
     void init(World* world, Body* body);
-    void update(const uint32_t dt);
+    void update(const float dt);
   private:
     World* world_;
     Body* body_;

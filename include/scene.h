@@ -21,7 +21,7 @@ class Scene {
     virtual void init(World* world) = 0;
     virtual void shutdown() = 0;
 
-    virtual void update(const uint32_t dt) = 0;
+    virtual void update(const float dt) = 0;
     virtual void handleMouseEvent(const SDL_Event e) = 0;
     virtual void handleKeyEvent(const SDL_Keycode key) = 0;
     virtual void render() = 0;

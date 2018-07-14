@@ -25,7 +25,7 @@ void SceneSeek::shutdown() {
   printf("Seek Scene Has Been Shutdown\n");
 }
 
-void SceneSeek::update(const uint32_t dt) {
+void SceneSeek::update(const float dt) {
   agent_.update(dt);
 }
 

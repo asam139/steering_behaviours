@@ -22,7 +22,7 @@ void Body::init(const Type type) {
   steering_ = Steering::Direct_Seek;
 }
 
-void Body::update(const uint32_t dt) {
+void Body::update(const float dt) {
   switch (steering_) {
     case Steering::Direct_Seek: update_direct_seek(dt); break;
     case Steering::Seek: update_seek(dt); break;
@@ -45,32 +45,28 @@ void Body::render() const {
 }
 
 void Body::setTarget(const Vec2& target) {
-  target_ = target;
+    target_ = target;
 }
 
-void Body::update_direct_seek(const uint32_t dt) {
-    float deltaTime = dt / TICKS_PER_SECOND;
+void Body::update_direct_seek(const float dt) {
+    velocity_ = (target_ - position_).normalized() * max_velocity_ * dt;
+    position_ = position_ + velocity_;
 
-  velocity_ = (target_ - position_).normalized() * max_velocity_ * deltaTime;
-  position_ = position_ + velocity_;
+    dd.green.pos = position_;
+    dd.green.v = velocity_ * 25.0f;
 
-  dd.green.pos = position_;
-  dd.green.v = velocity_ * 25.0f;
+    dd.red.pos = position_;
+    dd.red.v = Vec2 (0.0f, 0.0f);
 
-  dd.red.pos = position_;
-  dd.red.v = Vec2 (0.0f, 0.0f);
-
-  dd.blue.pos = position_;
-  dd.blue.v = Vec2(0.0f, 0.0f);
+    dd.blue.pos = position_;
+    dd.blue.v = Vec2(0.0f, 0.0f);
 
 }
 
-void Body::update_seek(const uint32_t dt) {
-    float deltaTime = dt / TICKS_PER_SECOND;
-
-    const Vec2 desired_velocity = (target_ - position_).normalized() * max_velocity_ * deltaTime;
-    const Vec2 steering = (desired_velocity - velocity_).trunc(max_steering_ * deltaTime) / mass_;
-    velocity_ = (velocity_ + steering).trunc(max_velocity_ * deltaTime);
+void Body::update_seek(const float dt) {
+    const Vec2 desired_velocity = (target_ - position_).normalized() * max_velocity_ * dt;
+    const Vec2 steering = (desired_velocity - velocity_).trunc(max_steering_ * dt) / mass_;
+    velocity_ = (velocity_ + steering).trunc(max_velocity_ * dt);
     position_ = position_ + velocity_;
 
     dd.green.pos = position_;
@@ -83,10 +79,8 @@ void Body::update_seek(const uint32_t dt) {
     dd.red.v = steering * 100.0f;
 }
 
-void Body::update_direct_flee(const uint32_t dt) {
-    float deltaTime = dt / TICKS_PER_SECOND;
-
-    velocity_ = (position_ - target_).normalized() * max_velocity_ * deltaTime;
+void Body::update_direct_flee(const float dt) {
+    velocity_ = (position_ - target_).normalized() * max_velocity_ * dt;
     position_ = position_ + velocity_;
 
     dd.green.pos = position_;
@@ -99,11 +93,10 @@ void Body::update_direct_flee(const uint32_t dt) {
     dd.blue.v = Vec2(0.0f, 0.0f);
 }
 
-void Body::update_flee(const uint32_t dt) {
-    float deltaTime = dt / TICKS_PER_SECOND;
-    const Vec2 desired_velocity = (position_ - target_).normalized() * max_velocity_ * deltaTime;
-    const Vec2 steering = (desired_velocity - velocity_).trunc(max_steering_ * deltaTime) / mass_;
-    velocity_ = (velocity_ + steering).trunc(max_velocity_ * deltaTime);
+void Body::update_flee(const float dt) {
+    const Vec2 desired_velocity = (position_ - target_).normalized() * max_velocity_ * dt;
+    const Vec2 steering = (desired_velocity - velocity_).trunc(max_steering_ * dt) / mass_;
+    velocity_ = (velocity_ + steering).trunc(max_velocity_ * dt);
     position_ = position_ + velocity_;
     rotation_ = 0.0f; //no rotation
 
@@ -117,10 +110,7 @@ void Body::update_flee(const uint32_t dt) {
     dd.red.v = steering * 100.0f;
 }
 
-void Body::update_direct_arrive(const uint32_t dt){
-    float deltaTime = dt / TICKS_PER_SECOND;
-    printf("Dt [%d]\n", deltaTime);
-
+void Body::update_direct_arrive(const float dt){
     //direction to the target
     velocity_ = target_ - position_;
     if (velocity_.length2() < sq_radius_) { //inside the radius

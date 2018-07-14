@@ -38,7 +38,7 @@ void Game::start() {
     uint32_t loops = 0;
     while ((SDL_GetTicks() > next_game_tick) && (loops < MAX_FRAME_SKIP)) {
       handleInput();
-      update(skip_ticks);
+      update(skip_ticks/TICKS_PER_SECOND);
 
       next_game_tick += skip_ticks;
       ++loops;
@@ -108,7 +108,7 @@ void Game::handleInput() {
   }
 }
 
-void Game::update(const uint32_t dt) {
+void Game::update(const float dt) {
   scenes_[curr_scene_]->update(dt / slo_mo_);
 }
 

@@ -20,7 +20,7 @@ class SceneSeek: public Scene {
     void init(World* world) final;
     void shutdown() final;
 
-    void update(const uint32_t dt) final;
+    void update(const float dt) final;
     void handleMouseEvent(const SDL_Event e) final;
     void handleKeyEvent(const SDL_Keycode key) final;
     void render() final;

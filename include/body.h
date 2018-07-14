@@ -34,18 +34,18 @@ class Body {
     ~Body() {};
 
     void init(const Type type);
-    void update(const uint32_t dt);
+    void update(const float dt);
     void render() const;
 
     void setTarget(const Vec2& target);
     void setSteering(const Steering steering) { steering_ = steering; };
   private:
-    void update_direct_seek(const uint32_t);
-    void update_seek(const uint32_t);
-    void update_direct_flee(const uint32_t dt);
-    void update_flee(const uint32_t dt);
-    void update_direct_arrive(const uint32_t dt);
-    void update_arrive(const uint32_t dt);
+    void update_direct_seek(const float dt);
+    void update_seek(const float dt);
+    void update_direct_flee(const float dt);
+    void update_flee(const float dt);
+    void update_direct_arrive(const float dt);
+    void update_arrive(const float dt);
 
     Sprite sprite_;
     Type type_;
@@ -62,7 +62,7 @@ class Body {
     const float max_steering_ { 0.1f };
 
     const float sq_radius_ { 5.0f }; //squared radius
-    const float time_to_target_ { 1.f };
+    const float time_to_target_ { 50.f };
 
     struct {
       struct {
