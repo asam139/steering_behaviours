@@ -22,8 +22,10 @@ class Body {
     };
 
     enum class Steering {
-      Direct_Seek,
-      Seek,
+        Direct_Seek,
+        Seek,
+        Direct_Flee,
+        Flee
     };
 
     Body() {};
@@ -38,6 +40,8 @@ class Body {
   private:
     void update_direct_seek(const uint32_t);
     void update_seek(const uint32_t);
+    void update_direct_flee(const uint32_t dt);
+    void update_flee(const uint32_t dt);
 
     Sprite sprite_;
     Type type_;
