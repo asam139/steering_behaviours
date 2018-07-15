@@ -41,7 +41,8 @@ class Body {
         Direct_Flee,
         Flee,
         Direct_Arrive,
-        Arrive
+        Arrive,
+        Wandering
     };
 
     Body() {};
@@ -62,6 +63,7 @@ class Body {
     void update_flee(const float dt);
     void update_direct_arrive(const float dt);
     void update_arrive(const float dt);
+    void update_wandering(const float dt);
 
     Sprite sprite_;
     Type type_;
@@ -71,6 +73,7 @@ class Body {
     KinematicSteering _steering;
     const float _maxSpeed { 5.f };
     const float _maxAcceleration { 1.0f};
+    const float _maxRotation = { M_PI };
     const float _maxAngularSpeed = { 1.0f };
 
     const float _minDistance { 5.0f }; //squared radius

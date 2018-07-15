@@ -8,6 +8,7 @@
 #include <body.h>
 #include <defines.h>
 #include <debug_draw.h>
+#include <utils.h>
 
 void Body::init(const Type type) {
     type_ = type;
@@ -36,6 +37,7 @@ void Body::update(const float dt) {
     case SteeringMode::Flee: update_flee(dt); break;
     case SteeringMode::Direct_Arrive: update_direct_arrive(dt); break;
     case SteeringMode::Arrive: update_arrive(dt); break;
+    case SteeringMode::Wandering: update_wandering(dt); break;
     default: update_direct_seek(dt); break;
   }
 
@@ -200,6 +202,27 @@ void Body::update_arrive(const float dt){
 
     dd.red.pos = _kinematicStatus.position;
     dd.red.v = _kinematicStatus.acceleration * 50.0f;
+
+    dd.blue.pos = _kinematicStatus.position;
+    dd.blue.v = {0.0f, 0.0f};
+}
+
+void Body::update_wandering(const float dt) {
+    Vec2 orientation;
+    //orientation of character as vector
+    orientation.fromPolar(1.0f, _kinematicStatus.orientation);
+
+    _kinematicStatus.velocity = orientation * _maxSpeed; //max speed
+    //rotate to random (binomial distribution around 0)
+    _kinematicStatus.rotation = _maxRotation * RandomFloat(-1.0f, 1.0f);
+
+    updateKinematic(dt, _steering);
+
+    dd.green.pos = _kinematicStatus.position;
+    dd.green.v = _kinematicStatus.velocity * 25.0f;
+
+    dd.red.pos = _kinematicStatus.position;
+    dd.red.v = {0.0f, 0.0f};
 
     dd.blue.pos = _kinematicStatus.position;
     dd.blue.v = {0.0f, 0.0f};

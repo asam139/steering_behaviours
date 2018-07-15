@@ -65,6 +65,10 @@ void SceneSeek::handleKeyEvent(const SDL_Keycode key) {
       agent_.setSteeringMode(Body::SteeringMode::Arrive);
           printf("Behavior Of Agent Changed To Arrive\n");
           break;
+    case SDLK_7:
+      agent_.setSteeringMode(Body::SteeringMode::Wandering);
+          printf("Behavior Of Agent Changed To Wandering\n");
+          break;
   }
 }
 
