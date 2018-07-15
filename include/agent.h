@@ -25,7 +25,7 @@ class Agent {
     void render() const;
     void shutdown();
 
-    void setSteering(Body::Steering steering) { body_.setSteering(steering); }
+    void setSteeringMode(Body::SteeringMode steering) { body_.setSteering(steering); }
   private:
     World * world_;
 

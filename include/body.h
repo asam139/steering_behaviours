@@ -21,7 +21,7 @@ class Body {
       Purple,
     };
 
-    enum class Steering {
+    enum class SteeringMode {
         Direct_Seek,
         Seek,
         Direct_Flee,
@@ -38,7 +38,7 @@ class Body {
     void render() const;
 
     void setTarget(const Vec2& target);
-    void setSteering(const Steering steering) { steering_ = steering; };
+    void setSteering(const SteeringMode steering) { steering_ = steering; };
   private:
     void update_direct_seek(const float dt);
     void update_seek(const float dt);
@@ -49,7 +49,7 @@ class Body {
 
     Sprite sprite_;
     Type type_;
-    Steering steering_;
+    SteeringMode steering_;
 
     Vec2 target_ { WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 };
     Vec2 position_ { WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2};
@@ -59,7 +59,7 @@ class Body {
     float rotation_ = 0.0f;
 
     const float max_velocity_ { 5.f };
-    const float max_steering_ { 0.1f };
+    const float max_steering_ { 0.25f };
 
     const float sq_radius_ { 5.0f }; //squared radius
     const float time_to_target_ { 50.f };

@@ -19,16 +19,16 @@ void Body::init(const Type type) {
     default: sprite_.loadFromFile(AGENT_GREEN_PATH);
   }
 
-  steering_ = Steering::Direct_Seek;
+  steering_ = SteeringMode::Direct_Seek;
 }
 
 void Body::update(const float dt) {
   switch (steering_) {
-    case Steering::Direct_Seek: update_direct_seek(dt); break;
-    case Steering::Seek: update_seek(dt); break;
-    case Steering::Direct_Flee: update_direct_flee(dt); break;
-    case Steering::Flee: update_flee(dt); break;
-    case Steering::Direct_Arrive: update_direct_arrive(dt); break;
+    case SteeringMode::Direct_Seek: update_direct_seek(dt); break;
+    case SteeringMode::Seek: update_seek(dt); break;
+    case SteeringMode::Direct_Flee: update_direct_flee(dt); break;
+    case SteeringMode::Flee: update_flee(dt); break;
+    case SteeringMode::Direct_Arrive: update_direct_arrive(dt); break;
     default: update_direct_seek(dt); break;
   }
 
