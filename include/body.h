@@ -99,10 +99,7 @@ class Body {
     } dd;
 
     KinematicStatus _state;
-
-    KinematicStatus _kinematicStatus;
     KinematicSteering _steering;
-    KinematicStatus _kinematicStatusTarget;
 };
 
 #endif
