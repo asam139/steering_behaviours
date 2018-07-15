@@ -73,6 +73,10 @@ void SceneSeek::handleKeyEvent(const SDL_Keycode key) {
           agent_.setSteeringMode(Body::SteeringMode::Align);
           printf("Behavior Of Agent Changed To Align\n");
           break;
+      case SDLK_9:
+          agent_.setSteeringMode(Body::SteeringMode::VelocityMatching);
+          printf("Behavior Of Agent Changed To Velocity Matching\n");
+          break;
   }
 }
 

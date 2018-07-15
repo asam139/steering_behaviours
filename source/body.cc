@@ -42,6 +42,7 @@ void Body::update(const float dt) {
     case SteeringMode::Arrive: update_arrive(dt); break;
     case SteeringMode::Wandering: update_wandering(dt); break;
     case SteeringMode::Align: update_align(dt); break;
+    case SteeringMode::VelocityMatching: update_velocity_matching(dt); break;
     default: update_direct_seek(dt); break;
   }
 
@@ -246,10 +247,8 @@ void Body::update_align(const float dt) {
     _steering.angularAcceleration = (target_rotation) / _fixedTime;
     _steering.acceleration = {0.0f, 0.0f};
 
-
     _kinematicStatus.velocity = {0.0f, 0.0f};
     updateKinematic(dt, _steering);
-
 
     Vec2 orientation;
     //orientation of character as vector
@@ -268,4 +267,18 @@ void Body::update_align(const float dt) {
     dd.blue.v = {0.0f, 0.0f};
 }
 
+void Body::update_velocity_matching(const float dt) {
+    _steering.acceleration = (_kinematicStatusTarget.velocity - _kinematicStatus.velocity) / _fixedTime;
+    _steering.angularAcceleration = 0.0f;
 
+    updateKinematic(dt, _steering);
+
+    dd.green.pos = _kinematicStatus.position;
+    dd.green.v = _kinematicStatus.velocity * 25.0f;
+
+    dd.red.pos = _kinematicStatus.position;
+    dd.red.v = _kinematicStatus.acceleration * 50.0f;
+
+    dd.blue.pos = _kinematicStatus.position;
+    dd.blue.v = {0.0f, 0.0f};
+}

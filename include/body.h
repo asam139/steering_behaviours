@@ -43,7 +43,8 @@ class Body {
         Direct_Arrive,
         Arrive,
         Wandering,
-        Align
+        Align,
+        VelocityMatching
     };
 
     Body() {};
@@ -66,6 +67,7 @@ class Body {
     void update_arrive(const float dt);
     void update_wandering(const float dt);
     void update_align(const float dt);
+    void update_velocity_matching(const float dt);
 
     Sprite sprite_;
     Type type_;
