@@ -253,8 +253,10 @@ void Body::update_kinematic_wander(const float dt) {
     orientation.fromPolar(1.0f, _state.orientation);
 
     _state.velocity = orientation * _maxSpeed; //max speed
-    //rotate to random (binomial distribution around 0)
-    _state.angularAcceleration = _maxRotation * RandomFloat(-1.0f, 1.0f);
+
+    // rotate to random (binomial distribution around 0)
+    _steering.acceleration = {0.0f, 0.0f};
+    _steering.angularAcceleration = _maxRotation * RandomFloat(-1.0f, 1.0f);
 
     updateKinematic(dt, _steering);
 
