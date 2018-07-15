@@ -74,12 +74,10 @@ class Body {
     const float _maxAngularSpeed = { 1.0f };
 
     const float _minDistance { 5.0f }; //squared radius
+    const float _slowRadius { 100.0f };
     const float _fixedTime { 50.f };
 
-
     KinematicStatus _kinematicStatusTarget;
-
-    const float slow_radius_ { 100.0f };
 
     struct {
       struct {

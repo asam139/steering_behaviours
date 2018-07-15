@@ -35,6 +35,7 @@ void Body::update(const float dt) {
     case SteeringMode::Direct_Flee: update_direct_flee(dt); break;
     case SteeringMode::Flee: update_flee(dt); break;
     case SteeringMode::Direct_Arrive: update_direct_arrive(dt); break;
+    case SteeringMode::Arrive: update_arrive(dt); break;
     default: update_direct_seek(dt); break;
   }
 
@@ -55,7 +56,7 @@ void Body::setTarget(const Vec2& target) {
 }
 
 void Body::updateKinematic(const float dt, const KinematicSteering& steering) {
-    _kinematicStatus.acceleration += steering.acceleration * dt;
+    _kinematicStatus.acceleration = steering.acceleration;
     if (_kinematicStatus.acceleration.length() > _maxAcceleration) {
         _kinematicStatus.acceleration = _kinematicStatus.acceleration.normalized() * _maxAcceleration;
     }
@@ -151,13 +152,11 @@ void Body::update_direct_arrive(const float dt) {
 
     //direction to the target
     const Vec2 direction = (_kinematicStatusTarget.position - _kinematicStatus.position);
-    if (direction.length2() < _minDistance * _minDistance) { //inside the radius
+    if (direction.length() < _minDistance) { //inside the radius
         _kinematicStatus.velocity = {0.0f, 0.0f};
     } else {
-        printf("%f\n", direction.length());
         _kinematicStatus.velocity = direction.normalized() * direction.length() / _fixedTime;
     }
-    printf("Velocity [%f, %f]\n", _kinematicStatus.velocity.x(), _kinematicStatus.velocity.y());
 
     _steering.acceleration = {0.0f, 0.0f};
     _steering.angularAcceleration = 0.0f;
@@ -177,49 +176,33 @@ void Body::update_direct_arrive(const float dt) {
 
 void Body::update_arrive(const float dt){
     //direction to the target
-//    velocity_ = target_ - position_;
-//    if (velocity_.length2() < sq_radius_) { //inside the radius
-//        velocity_.x() = 0.0f; //no velocity
-//        velocity_.y() = 0.0f;
-//
-//    } else {
-//        velocity_ /= time_to_target_ * dt; //velocity adjusted to time
-//        if (velocity_.length() > max_velocity_ ) { //max out
-//            //normalized direction to max speed
-//            velocity_ = velocity_.normalized() * max_velocity_;
-//        }
-//    }
-//
-//    //direction to the target
-//    const Vec2 direction = target_ - position_;
-//    const float distance = direction.length(); //distance to target
-//    float target_speed = max_velocity_; //max speed
-//    if (distance < slow_radius_) { //inside the slow zone
-//        //speed slowing down
-//        target_speed = (max_velocity_ * distance) / slow_radius_;
-//    }
-//    //velocity towards the target
-//    const Vec2 target_velocity = direction.normalized() * target_speed;
-//    //linear acceleration adjusted to time
-//    const Vec2 target_acceleration = (target_velocity - character.velocity) / time_to_target_;
-//    if (steering->linear.length() > max_acceleration_) { //max out
-//    //normalized to max acceleration
-//        steering->linear = steering->linear.normalized() * max_acceleration_;
-//    }
-//    steering->angular = 0.0f; //no angular
+    const Vec2 direction = (_kinematicStatusTarget.position - _kinematicStatus.position);
+    const float distance = direction.length(); //distance to target
+
+    float speed = _maxSpeed; //max speed
+    if (distance < _slowRadius) { //inside the slow zone
+        //speed slowing +down
+        speed = (_maxSpeed * distance) / _slowRadius;
+    }
+
+    //velocity towards the target
+    const Vec2 velocity = direction.normalized() * speed;
+    //linear acceleration adjusted to time
+    _steering.acceleration = (velocity - _kinematicStatus.velocity); // _fixedTime;
+    _steering.angularAcceleration = 0.0f;
+    printf("_steering.acceleration [%f, %f]\n", _steering.acceleration.x(), _steering.acceleration.y());
 
 
-//    position_ = position_ + velocity_;
-//    rotation_ = 0.0f; //no rotation*/
-//
-//    dd.green.pos = position_;
-//    dd.green.v = velocity_ * 25.0f;
-//
-//    dd.red.pos = position_;
-//    dd.red.v = Vec2 (0.0f, 0.0f);
-//
-//    dd.blue.pos = position_;
-//    dd.blue.v = Vec2(0.0f, 0.0f);
+    updateKinematic(dt, _steering);
+
+    dd.green.pos = _kinematicStatus.position;
+    dd.green.v = _kinematicStatus.velocity * 25.0f;
+
+    dd.red.pos = _kinematicStatus.position;
+    dd.red.v = _kinematicStatus.acceleration * 50.0f;
+
+    dd.blue.pos = _kinematicStatus.position;
+    dd.blue.v = {0.0f, 0.0f};
 }
 
 
