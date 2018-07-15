@@ -20,19 +20,30 @@ bool Window::init(const char* name, const uint32_t width, const uint32_t height)
       printf("Warning: Linear texture filtering not enabled!");
     }
 
-    window_ = SDL_CreateWindow(name, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_SHOWN);
+    window_ = SDL_CreateWindow(
+            name,
+            SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height,
+            SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
     if (!window_) {
       printf("Window could not be created! SDL Error: %s\n", SDL_GetError());
       return false;
     } else {
       SDL_SetWindowTitle(window_, name);
 
-      renderer_ = SDL_CreateRenderer(window_, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+      renderer_ = SDL_CreateRenderer(window_, -1, SDL_RENDERER_ACCELERATED);
       if (!renderer_) {
         printf("Renderer could not be created! SDL Error: %s\n", SDL_GetError());
         return false;
       } else {
         SDL_SetRenderDrawColor(renderer_, 0xFF, 0xFF, 0xFF, 0xFF);
+
+        // Adjust Render Scale for high-dpi support
+        int width, height;
+        SDL_GetWindowSize(window_, &width, &height);
+        int rWidth, rHeight;
+        SDL_GL_GetDrawableSize(window_, &rWidth, &rHeight);
+        int scale = rWidth/width;
+        SDL_RenderSetScale(renderer_, scale, scale);
 
         int imgFlags = IMG_INIT_PNG;
         if (!(IMG_Init(imgFlags) & imgFlags)) {
