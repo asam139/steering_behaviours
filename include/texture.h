@@ -12,7 +12,7 @@
 #include <SDL/SDL_ttf.h>
 
 class Texture {
-  public:
+public:
     Texture();
     ~Texture();
 
@@ -24,9 +24,9 @@ class Texture {
     void setAlpha(const uint8_t alpha) const;
     int getWidth() const { return width_; };
     int getHeight() const { return height_; };
-  protected:
+protected:
     void renderText(const uint32_t x, const uint32_t y, const SDL_Rect* clip = nullptr, const float angle = 0.0, const SDL_Point* center = nullptr, const SDL_RendererFlip flip = SDL_FLIP_NONE) const;
-  private:
+private:
     SDL_Texture * texture_ = nullptr;
     int width_ = 0;
     int height_ = 0;

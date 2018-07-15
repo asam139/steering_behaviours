@@ -13,6 +13,7 @@
 #include <cstdio>
 
 
+
 Texture::Texture() {
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
   r_mask_ = 0xff000000;
@@ -144,12 +145,13 @@ void Texture::setAlpha(const uint8_t alpha) const {
 }
 
 void Texture::renderText(const uint32_t x, const uint32_t y, const SDL_Rect* clip, const float angle, const SDL_Point* center, const SDL_RendererFlip flip) const {
+  const float angle_rad = (angle * 180) / M_PI;
   SDL_Renderer* renderer = Window::instance().getRenderer();
-  SDL_Rect renderQuad = {static_cast<int>(x), static_cast<int>(y), width_, height_ };
+  SDL_Rect renderQuad = { (int)x, (int)y, width_, height_ };
 
   if (clip) {
     renderQuad.w = clip->w;
     renderQuad.h = clip->h;
   }
-  SDL_RenderCopyEx(renderer, texture_, clip, &renderQuad, angle, center, flip);
+  SDL_RenderCopyEx(renderer, texture_, clip, &renderQuad, angle_rad, center, flip);
 }
