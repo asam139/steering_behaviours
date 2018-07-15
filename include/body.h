@@ -13,68 +13,74 @@
 #include <mathlib/vec2.h>
 using MathLib::Vec2;
 
+class Agent;
+
 class Body {
   public:
-
-    struct KinematicStatus {
-        Vec2 position { 0.0f, 0.0f };
-        Vec2 velocity { 0.0f, 0.0f }; //linear velocity
-        Vec2 acceleration { 0.0f, 0.0f }; //linear acceleration
-        float orientation;
-        float angularAcceleration; //angular velocity
-    };
-
-    struct KinematicSteering {
-        Vec2 acceleration { 0.0f, 0.0f }; //linear velocity
-        float angularAcceleration; //angular velocity
+    enum class Color {
+        Green,
+        Blue,
+        Purple,
+        Red,
     };
 
     enum class Type {
-      Green,
-      Blue,
-      Purple,
+        Autonomous,
+        Manual,
     };
 
     enum class SteeringMode {
-        Direct_Seek,
-        Seek,
-        Direct_Flee,
-        Flee,
-        Direct_Arrive,
-        Arrive,
-        Wandering,
-        Align,
-        VelocityMatching
+        Kinematic_Seek,         //1       Kinematics
+        Kinematic_Flee,         //2
+        Kinematic_Arrive,       //3
+        Kinematic_Wander,       //4
+        Seek,                   //q       Steering Basics
+        Flee,                   //w
+        Arrive,                 //e
+        Align,                  //r
+        Velocity_Matching,      //t
+        Pursue,                 //a       Steering Delegated
+        Face,                   //s
+        LookGoing,              //d
+        Wander,                 //f
     };
 
     Body() {};
     ~Body() {};
 
-    void init(const Type type);
+    void init(const Color color, const Type type);
     void update(const float dt);
     void render() const;
 
-    void setTarget(const Vec2& target);
-    void setSteering(const SteeringMode steering) { steering_ = steering; };
+    void setTarget(Agent* target);
+    void setSteering(const SteeringMode steering) { _steering_mode = steering; };
+    const KinematicStatus* getKinematic() const { return &_state; }
+    KinematicStatus* getKinematic() { return &_state; }
   private:
+    void updateManual(const float dt);
+    void updateAutonomous(const float dt);
+    void setOrientation(const MathLib::Vec2& direction);
+    void keepInSpeed();
+    void keepInBounds();
+
     void updateKinematic(const float dt, const KinematicSteering& steering);
 
-    void update_direct_seek(const float dt);
+    void update_kinematic_seek(const float dt);
     void update_seek(const float dt);
-    void update_direct_flee(const float dt);
+    void update_kinematic_flee(const float dt);
     void update_flee(const float dt);
-    void update_direct_arrive(const float dt);
+    void update_kinematic_arrive(const float dt);
     void update_arrive(const float dt);
-    void update_wandering(const float dt);
+    void update_kinematic_wander(const float dt);
     void update_align(const float dt);
     void update_velocity_matching(const float dt);
 
-    Sprite sprite_;
-    Type type_;
-    SteeringMode steering_;
+    Sprite _sprite;
+    Type _type;
+    Color _color;
+    SteeringMode _steering_mode;
+    Agent* _target;
 
-    KinematicStatus _kinematicStatus;
-    KinematicSteering _steering;
     const float _maxSpeed { 5.f };
     const float _maxAcceleration { 1.0f};
     const float _maxRotation = { M_PI_4 };
@@ -85,14 +91,18 @@ class Body {
     const float _slowAngle { M_PI / 8.0f };
     const float _fixedTime { 50.f };
 
-    KinematicStatus _kinematicStatusTarget;
-
     struct {
       struct {
         Vec2 pos;
         Vec2 v;
       } green, red, blue;
     } dd;
+
+    KinematicStatus _state;
+
+    KinematicStatus _kinematicStatus;
+    KinematicSteering _steering;
+    KinematicStatus _kinematicStatusTarget;
 };
 
 #endif

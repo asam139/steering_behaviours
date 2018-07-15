@@ -11,21 +11,29 @@
 #include <mathlib/vec2.h>
 
 #include <cstdio>
+#include <agent.h>
 
 using MathLib::Vec2;
 
 class World {
-  public:
-    World() {};
-    ~World() {};
-
-    Vec2 getWaypoint() const { return way_point_; };
-    void setWayPoint(const Vec2& way_point) {
-      way_point_ = way_point;
-      printf("New WayPoint [%d, %d]\n", (uint32_t)way_point.x(), (uint32_t)way_point.y());
+public:
+    World() {
+        target_.init(this, Body::Color::Red, Body::Type::Manual);
+        ia_.init(this, Body::Color::Green, Body::Type::Autonomous);
+        ia_.getKinematic()->position = Vec2(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2);
     };
-  private:
-    Vec2 way_point_{ 0.0f, 0.0f };
+    ~World() {
+        target_.shutdown();
+        ia_.shutdown();
+    };
+
+    void update(const float dt) { target_.update(dt); ia_.update(dt); }
+    void render() { target_.render(); ia_.render(); }
+
+    Agent* target() { return &target_; }
+    Agent* ia() { return &ia_; }
+private:
+    Agent target_, ia_;
 };
 
 #endif

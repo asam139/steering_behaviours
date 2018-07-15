@@ -12,16 +12,18 @@
 
 class Sprite : public Texture {
 public:
-  Sprite() {};
-  ~Sprite() {};
+    Sprite() {};
+    ~Sprite() {};
 
-  void setPositionUpLeft(const uint32_t x, const uint32_t y);
-  void setPosition(const uint32_t x, const uint32_t y);
-  void setVisible(const bool visible = true);
-  void render() const;
+    void setPositionUpLeft(const uint32_t x, const uint32_t y);
+    void setPosition(const uint32_t x, const uint32_t y);
+    void setRotation(const float angle);
+    void setVisible(const bool visible = true);
+    void render() const;
 private:
-  SDL_Point position_ { 0, 0 };
-  bool visible_ { true };
+    SDL_Point position_ { 0, 0 };
+    float angle_{ 0.0f };
+    bool visible_ { true };
 protected:
 };
 

@@ -8,7 +8,7 @@
 #include <sprite.h>
 
 void Sprite::render() const {
-  if (visible_) renderText(position_.x, position_.y);
+  if (visible_) renderText(position_.x, position_.y, nullptr, angle_);
 }
 
 void Sprite::setVisible(const bool visible) {
@@ -23,4 +23,8 @@ void Sprite::setPositionUpLeft(const uint32_t x, const uint32_t y) {
 void Sprite::setPosition(const uint32_t x, const uint32_t y) {
   position_.x = x - (getWidth() / 2);
   position_.y = y - (getHeight() / 2);
+}
+
+void Sprite::setRotation(const float angle) {
+  angle_ = angle;
 }

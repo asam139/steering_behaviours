@@ -16,17 +16,19 @@
 class World;
 
 class Agent {
-  public:
+public:
     Agent() {};
     ~Agent() {};
 
-    void init(World* world, const Body::Type type);
+    void init(World* world, const Body::Color color, const Body::Type type);
     void update(const float dt);
     void render() const;
     void shutdown();
 
-    void setSteeringMode(Body::SteeringMode steering) { body_.setSteering(steering); }
-  private:
+    void setSteering(Body::SteeringMode steering) { body_.setSteering(steering); }
+    const KinematicStatus* getKinematic() const { return body_.getKinematic(); }
+    KinematicStatus* getKinematic() { return body_.getKinematic(); }
+private:
     World * world_;
 
     Body body_;

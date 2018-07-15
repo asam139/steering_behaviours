@@ -14,13 +14,13 @@ class Body;
 class World;
 
 class Mind {
-  public:
+public:
     Mind() {};
     ~Mind() {};
 
     void init(World* world, Body* body);
     void update(const float dt);
-  private:
+private:
     World* world_;
     Body* body_;
 };

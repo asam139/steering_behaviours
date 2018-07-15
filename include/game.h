@@ -14,27 +14,21 @@
 #include <world.h>
 
 class Game {
-  public:
+public:
     Game() {};
     ~Game() {};
 
     void init();
     void start();
     void shutdown();
-  private:
+private:
     void handleInput();
     void update(const float dt);
     void render();
 
-    void createScenes();
-    void nextScene(const int8_t sign);
-
     bool quit_ = false;
     Sprite fps_sprite_;
     TTF_Font* font_ = nullptr;
-
-    int8_t curr_scene_ = 0;
-    Scene* scenes_[SCENE_NUMBER];
 
     World world_;
 

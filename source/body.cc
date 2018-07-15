@@ -8,95 +8,132 @@
 #include <body.h>
 #include <defines.h>
 #include <debug_draw.h>
+#include <agent.h>
 #include <utils.h>
 
-void Body::init(const Type type) {
-    type_ = type;
-    switch(type) {
-        case Type::Green: sprite_.loadFromFile(AGENT_GREEN_PATH); break;
-        case Type::Blue: sprite_.loadFromFile(AGENT_BLUE_PATH); break;
-        case Type::Purple: sprite_.loadFromFile(AGENT_PURPLE_PATH); break;
-        default: sprite_.loadFromFile(AGENT_GREEN_PATH);
+void Body::init(const Color color, const Type type) {
+    _type = type;
+    _color = color;
+
+    switch(color) {
+        case Color::Green: _sprite.loadFromFile(AGENT_GREEN_PATH); break;
+        case Color::Blue: _sprite.loadFromFile(AGENT_BLUE_PATH); break;
+        case Color::Purple: _sprite.loadFromFile(AGENT_PURPLE_PATH); break;
+        case Color::Red: _sprite.loadFromFile(AGENT_RED_PATH); break;
+        default: _sprite.loadFromFile(AGENT_GREEN_PATH);
     }
-    steering_ = SteeringMode::Direct_Seek;
 
-
-    _kinematicStatus.position = {WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2};
-    _kinematicStatus.velocity = {0.0f, 0.0f};
-    _kinematicStatus.orientation = M_PI_4;
-    _kinematicStatus.angularAcceleration = 0.0f;
-
-    _kinematicStatusTarget.position = {WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2};
-    _kinematicStatusTarget.velocity = {0.0f, 0.0f};
-    _kinematicStatusTarget.orientation = M_PI_2;
-    _kinematicStatusTarget.angularAcceleration = 0.0f;
+    _steering_mode = SteeringMode::Kinematic_Seek;
 }
 
 void Body::update(const float dt) {
-  switch (steering_) {
-    case SteeringMode::Direct_Seek: update_direct_seek(dt); break;
-    case SteeringMode::Seek: update_seek(dt); break;
-    case SteeringMode::Direct_Flee: update_direct_flee(dt); break;
-    case SteeringMode::Flee: update_flee(dt); break;
-    case SteeringMode::Direct_Arrive: update_direct_arrive(dt); break;
-    case SteeringMode::Arrive: update_arrive(dt); break;
-    case SteeringMode::Wandering: update_wandering(dt); break;
-    case SteeringMode::Align: update_align(dt); break;
-    case SteeringMode::VelocityMatching: update_velocity_matching(dt); break;
-    default: update_direct_seek(dt); break;
-  }
+    if (_type == Type::Autonomous) {
+        updateAutonomous(dt);
+    } else {
+        updateManual(dt);
+    }
 
-  sprite_.setPosition(_kinematicStatus.position.x(), _kinematicStatus.position.y());
+    _sprite.setPosition(_state.position.x(), _state.position.y());
+    _sprite.setRotation(_state.orientation);
+}
+
+void Body::updateAutonomous(const float dt) {
+    switch (_steering_mode) {
+        case SteeringMode::Kinematic_Seek: update_kinematic_seek(dt); break;
+        case SteeringMode::Kinematic_Flee: update_kinematic_flee(dt); break;
+        case SteeringMode::Kinematic_Arrive: update_kinematic_arrive(dt); break;
+        case SteeringMode::Kinematic_Wander: update_kinematic_wander(dt); break;
+        case SteeringMode::Seek: update_seek(dt); break;
+        case SteeringMode::Flee: update_flee(dt); break;
+        case SteeringMode::Arrive: update_arrive(dt); break;
+        case SteeringMode::Align: update_align(dt); break;
+        case SteeringMode::Velocity_Matching: update_velocity_matching(dt); break;
+        default: update_kinematic_seek(dt); break;
+    }
+
+    _sprite.setPosition(_kinematicStatus.position.x(), _kinematicStatus.position.y());
+}
+
+void Body::updateManual(const float dt) {
+    MathLib::Vec2 orientation;
+    orientation.fromPolar(1.0f, _state.orientation);
+    _state.velocity = orientation.normalized() * _state.speed;
+    _state.position += _state.velocity * dt;
+
+    keepInSpeed();
+    keepInBounds();
+
+    dd.green.pos = _state.position;
+    dd.green.v = _state.velocity;
 }
 
 void Body::render() const {
-  sprite_.render();
+  _sprite.render();
 
   DebugDraw::drawVector(dd.red.pos, dd.red.v, 0xFF, 0x00, 0x00, 0xFF);
   DebugDraw::drawVector(dd.green.pos, dd.green.v, 0x00, 0x50, 0x00, 0xFF);
   DebugDraw::drawVector(dd.blue.pos, dd.blue.v, 0x00, 0x00, 0xFF, 0xFF);
-  DebugDraw::drawPositionHist(_kinematicStatus.position);
+  DebugDraw::drawPositionHist(_state.position);
 }
 
-void Body::setTarget(const Vec2& target) {
-    _kinematicStatusTarget.position = target;
+void Body::setTarget(Agent* target) {
+    _target = target;
+}
+
+void Body::setOrientation(const Vec2& velocity) {
+    if (velocity.length2() > 0) {
+        _state.orientation = atan2(velocity.y(), velocity.x());
+    }
+}
+
+void Body::keepInBounds() {
+    if (_state.position.x() > WINDOW_WIDTH) _state.position.x() = 0.0f;
+    if (_state.position.x() < 0.0f) _state.position.x() = WINDOW_WIDTH;
+    if (_state.position.y() > WINDOW_HEIGHT) _state.position.y() = 0.0f;
+    if (_state.position.y() < 0.0f) _state.position.y() = WINDOW_HEIGHT;
+}
+
+void Body::keepInSpeed() {
+    if (_state.velocity.length() > _maxSpeed) {
+        _state.velocity = _state.velocity.normalized() * _maxSpeed;
+    }
 }
 
 void Body::updateKinematic(const float dt, const KinematicSteering& steering) {
-    _kinematicStatus.acceleration = steering.acceleration;
-    if (_kinematicStatus.acceleration.length() > _maxAcceleration) {
-        _kinematicStatus.acceleration = _kinematicStatus.acceleration.normalized() * _maxAcceleration;
+    _state.acceleration = steering.acceleration;
+    if (_state.acceleration.length() > _maxAcceleration) {
+        _state.acceleration = _state.acceleration.normalized() * _maxAcceleration;
     }
-    _kinematicStatus.velocity += _kinematicStatus.acceleration * dt;
-    if (_kinematicStatus.velocity.length() > _maxSpeed) {
-        _kinematicStatus.velocity = _kinematicStatus.velocity.normalized() * _maxSpeed;
+    _state.velocity += _state.acceleration * dt;
+    if (_state.velocity.length() > _maxSpeed) {
+        _state.velocity = _state.velocity.normalized() * _maxSpeed;
     }
 
-    _kinematicStatus.position += _kinematicStatus.velocity * dt;
+    _state.position += _state.velocity * dt;
 
-    _kinematicStatus.angularAcceleration = steering.angularAcceleration;
-    if (abs(_kinematicStatus.angularAcceleration) > _maxAngularSpeed) {
-        _kinematicStatus.angularAcceleration = sign(_kinematicStatus.angularAcceleration) * _maxAngularSpeed;
+    _state.angularAcceleration = steering.angularAcceleration;
+    if (abs(_state.angularAcceleration) > _maxAngularSpeed) {
+        _state.angularAcceleration = sign(_state.angularAcceleration) * _maxAngularSpeed;
     }
-    _kinematicStatus.orientation += _kinematicStatus.angularAcceleration * dt;
+    _state.orientation += _state.angularAcceleration * dt;
 }
 
-void Body::update_direct_seek(const float dt) {
-    _kinematicStatus.acceleration = {0.0f, 0.0f};
-    _kinematicStatus.velocity = (_kinematicStatusTarget.position - _kinematicStatus.position).normalized() * _maxSpeed;
+void Body::update_kinematic_seek(const float dt) {
+    _state.acceleration = {0.0f, 0.0f};
+    _state.velocity = (_target->getKinematic()->position - _state.position).normalized() * _maxSpeed;
 
     _steering.acceleration = {0.0f, 0.0f};
     _steering.angularAcceleration = 0.0f;
 
     updateKinematic(dt, _steering);
 
-    dd.green.pos = _kinematicStatus.position;
-    dd.green.v = _kinematicStatus.velocity * 25.0f;
+    dd.green.pos = _state.position;
+    dd.green.v = _state.velocity * 25.0f;
 
-    dd.red.pos = _kinematicStatus.position;
+    dd.red.pos = _state.position;
     dd.red.v = {0.0f, 0.0f};
 
-    dd.blue.pos = _kinematicStatus.position;
+    dd.blue.pos = _state.position;
     dd.blue.v = {0.0f, 0.0f};
 
 }
@@ -118,7 +155,7 @@ void Body::update_seek(const float dt) {
     dd.red.v = dd.blue.v - dd.green.v;
 }
 
-void Body::update_direct_flee(const float dt) {
+void Body::update_kinematic_flee(const float dt) {
     _kinematicStatus.acceleration = {0.0f, 0.0f};
     _kinematicStatus.velocity = (_kinematicStatus.position - _kinematicStatusTarget.position).normalized() * _maxSpeed;
 
@@ -154,7 +191,7 @@ void Body::update_flee(const float dt) {
     dd.red.v = dd.blue.v - dd.green.v;
 }
 
-void Body::update_direct_arrive(const float dt) {
+void Body::update_kinematic_arrive(const float dt) {
     _kinematicStatus.acceleration = {0.0f, 0.0f};
 
     //direction to the target
@@ -212,7 +249,7 @@ void Body::update_arrive(const float dt){
     dd.blue.v = {0.0f, 0.0f};
 }
 
-void Body::update_wandering(const float dt) {
+void Body::update_kinematic_wander(const float dt) {
     Vec2 orientation;
     //orientation of character as vector
     orientation.fromPolar(1.0f, _kinematicStatus.orientation);
