@@ -244,7 +244,6 @@ void Body::update_align(const float dt) {
     target_rotation *= sign(rotation); //positive or negative
     //angular acceleration adjusted to time
     _steering.angularAcceleration = (target_rotation) / _fixedTime;
-    printf("AngularAcceleration: [%f]\n", _steering.angularAcceleration);
     _steering.acceleration = {0.0f, 0.0f};
 
 
@@ -262,7 +261,6 @@ void Body::update_align(const float dt) {
     Vec2 targetOrientation;
     //orientation of character as vector
     targetOrientation.fromPolar(1.0f, _kinematicStatusTarget.orientation);
-    printf("Orientation2: [%f, %f]\n", targetOrientation.x(), targetOrientation.y());
     dd.red.pos = _kinematicStatusTarget.position;
     dd.red.v = targetOrientation * 100.0f;
 
