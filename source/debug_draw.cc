@@ -17,8 +17,10 @@ Vec2 DebugDraw::hist_[MAX_HIST];
 void DebugDraw::drawVector(const Vec2& pos, const Vec2& v,
   const uint8_t r, const uint8_t g, const uint8_t b, const uint8_t a) {
   if (enabled_) {
-    if (((v.x() > delta_) || (v.x() < -delta_)) && ((v.y() > delta_) || ((v.y() < -delta_)))) {
-      SDL_Renderer* renderer = Window::instance().getRenderer();
+
+    //if (((v.x() > delta_) || (v.x() < -delta_)) && ((v.y() > delta_) || ((v.y() < -delta_)))) {
+    if (v.length2() > delta_) {
+      SDL_Renderer *renderer = Window::instance().getRenderer();
       SDL_SetRenderDrawColor(renderer, r, g, b, a);
       SDL_RenderDrawLine(renderer, pos.x(), pos.y(), pos.x() + v.x(), pos.y() + v.y());
 
@@ -32,6 +34,7 @@ void DebugDraw::drawVector(const Vec2& pos, const Vec2& v,
       SDL_RenderDrawLine(renderer, p_vertex.x(), p_vertex.y(), p_arrow1.x(), p_arrow1.y());
       SDL_RenderDrawLine(renderer, p_vertex.x(), p_vertex.y(), p_arrow2.x(), p_arrow2.y());
     }
+    //}
   }
 }
 

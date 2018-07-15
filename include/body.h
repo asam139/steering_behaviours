@@ -18,10 +18,10 @@ class Body {
 
     struct KinematicStatus {
         Vec2 position { 0.0f, 0.0f };
-        float orientation;
         Vec2 velocity { 0.0f, 0.0f }; //linear velocity
-        float rotation; //angular velocity
         Vec2 acceleration { 0.0f, 0.0f }; //linear acceleration
+        float orientation;
+        float angularAcceleration; //angular velocity
     };
 
     struct KinematicSteering {
@@ -42,7 +42,8 @@ class Body {
         Flee,
         Direct_Arrive,
         Arrive,
-        Wandering
+        Wandering,
+        Align
     };
 
     Body() {};
@@ -64,6 +65,7 @@ class Body {
     void update_direct_arrive(const float dt);
     void update_arrive(const float dt);
     void update_wandering(const float dt);
+    void update_align(const float dt);
 
     Sprite sprite_;
     Type type_;
@@ -73,11 +75,12 @@ class Body {
     KinematicSteering _steering;
     const float _maxSpeed { 5.f };
     const float _maxAcceleration { 1.0f};
-    const float _maxRotation = { M_PI };
+    const float _maxRotation = { M_PI_4 };
     const float _maxAngularSpeed = { 1.0f };
 
     const float _minDistance { 5.0f }; //squared radius
     const float _slowRadius { 100.0f };
+    const float _slowAngle { M_PI / 8.0f };
     const float _fixedTime { 50.f };
 
     KinematicStatus _kinematicStatusTarget;
