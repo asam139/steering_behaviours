@@ -15,6 +15,20 @@ using MathLib::Vec2;
 
 class Body {
   public:
+
+    struct KinematicStatus {
+        Vec2 position { 0.0f, 0.0f };
+        float orientation;
+        Vec2 velocity { 0.0f, 0.0f }; //linear velocity
+        float rotation; //angular velocity
+        Vec2 acceleration { 0.0f, 0.0f }; //linear acceleration
+    };
+
+    struct KinematicSteering {
+        Vec2 acceleration { 0.0f, 0.0f }; //linear velocity
+        float angularAcceleration; //angular velocity
+    };
+
     enum class Type {
       Green,
       Blue,
@@ -40,6 +54,8 @@ class Body {
     void setTarget(const Vec2& target);
     void setSteering(const SteeringMode steering) { steering_ = steering; };
   private:
+    void updateKinematic(const float dt, const KinematicSteering& steering);
+
     void update_direct_seek(const float dt);
     void update_seek(const float dt);
     void update_direct_flee(const float dt);
@@ -51,18 +67,19 @@ class Body {
     Type type_;
     SteeringMode steering_;
 
-    Vec2 target_ { WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 };
-    Vec2 position_ { WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2};
+    KinematicStatus _kinematicStatus;
+    KinematicSteering _steering;
+    const float _maxSpeed { 5.f };
+    const float _maxAcceleration { 1.0f};
+    const float _maxAngularSpeed = { 1.0f };
 
-    Vec2 velocity_{ 0.0f, 0.0f };
-    float mass_ = 1.0f;
-    float rotation_ = 0.0f;
+    const float _minDistance { 5.0f }; //squared radius
+    const float _fixedTime { 50.f };
 
-    const float max_velocity_ { 5.f };
-    const float max_steering_ { 0.25f };
 
-    const float sq_radius_ { 5.0f }; //squared radius
-    const float time_to_target_ { 50.f };
+    KinematicStatus _kinematicStatusTarget;
+
+    const float slow_radius_ { 100.0f };
 
     struct {
       struct {
