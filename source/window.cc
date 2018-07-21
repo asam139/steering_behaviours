@@ -23,7 +23,7 @@ bool Window::init(const char* name, const uint32_t width, const uint32_t height)
     window_ = SDL_CreateWindow(
             name,
             SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height,
-            SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
+            SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI);
     if (!window_) {
       printf("Window could not be created! SDL Error: %s\n", SDL_GetError());
       return false;
