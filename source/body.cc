@@ -328,7 +328,17 @@ void Body::update_pursue(const float dt) {
     KinematicStatus new_target = *_target->getKinematic(); //new target
     //position of new target
     new_target.position += _target->getKinematic()->velocity * prediction;
-    //delegate to seek behavior with new target
 
-    MovementUtils::SeekCalculate(&_state, _target->getKinematic(), &_steering, _maxSpeed);
+    //delegate to seek behavior with new target
+    MovementUtils::SeekCalculate(&_state, &new_target, &_steering, _maxSpeed);
+    updateKinematic(dt, _steering);
+
+    dd.green.pos = _state.position;
+    dd.green.v = _state.velocity * 25.0f;
+
+    dd.red.pos = _state.position;
+    dd.red.v = _state.acceleration * 50.0f;
+
+    dd.blue.pos = _state.position;
+    dd.blue.v = {0.0f, 0.0f};
 }
