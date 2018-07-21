@@ -39,10 +39,27 @@ public:
     ~World() {
         target_.shutdown();
         ia_.shutdown();
+        for (auto a : _agentArray) {
+            a->shutdown();
+        }
     };
 
-    void update(const float dt) { target_.update(dt); ia_.update(dt); }
-    void render() { target_.render(); ia_.render(); }
+    void update(const float dt) {
+        target_.update(dt);
+        ia_.update(dt);
+
+        for (auto a : _agentArray) {
+            a->update(dt);
+        }
+    }
+    void render() {
+        target_.render();
+        ia_.render();
+
+        for (auto a : _agentArray) {
+            a->render();
+        }
+    }
 
     Agent* target() { return &target_; }
     Agent* ia() { return &ia_; }

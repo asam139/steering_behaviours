@@ -131,7 +131,11 @@ MathLib::Vec2 MovementUtils::FlockingAlignment(Agent& agent, const float maxRadi
 
     v = v / neighborCount;
 
-    return v.normalized();
+    if (v.length() > 0) {
+        v = v.normalized();
+    }
+
+    return v;
 }
 
 MathLib::Vec2 MovementUtils::FlockingCohesion(Agent &agent, const float maxRadius) {
@@ -157,7 +161,11 @@ MathLib::Vec2 MovementUtils::FlockingCohesion(Agent &agent, const float maxRadiu
 
     v = v - agent.getKinematic()->position;
 
-    return v.normalized();
+    if (v.length() > 0) {
+        v = v.normalized();
+    }
+
+    return v;
 }
 
 MathLib::Vec2 MovementUtils::FlockingSeparation(Agent& agent, const float maxRadius) {
@@ -183,5 +191,9 @@ MathLib::Vec2 MovementUtils::FlockingSeparation(Agent& agent, const float maxRad
     v = v / neighborCount;
     v = v * -1;
 
-    return v.normalized();
+    if (v.length() > 0) {
+        v = v.normalized();
+    }
+
+    return v;
 }
