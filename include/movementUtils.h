@@ -8,6 +8,8 @@
 
 #include "defines.h"
 
+class Agent;
+
 class MovementUtils {
 public:
     static void SeekCalculate(KinematicStatus *state, const KinematicStatus *targetState, KinematicSteering* steering,
@@ -25,6 +27,11 @@ public:
                                 const float wanderOffset, const float wanderRadius,
                                 const float wanderRate, const float maxAcceleration,
                                 const float maxRotation, const float slowAngle, float fixedTime);
+
+    // Flocking
+    static MathLib::Vec2 FlockingAlignment(Agent& agent, const float maxRadius);
+    static MathLib::Vec2 FlockingCohesion(Agent& agent, const float maxRadius);
+    static MathLib::Vec2 FlockingSeparation(Agent& agent, const float maxRadius);
 };
 
 

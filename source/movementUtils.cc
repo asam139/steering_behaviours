@@ -4,6 +4,7 @@
 
 #include "movementUtils.h"
 #import <debug_draw.h>
+#include <Agent.h>
 #include <mathlib/vec2.h>
 
 void MovementUtils::SeekCalculate(KinematicStatus *state, const KinematicStatus *targetState, KinematicSteering* steering,
@@ -105,4 +106,79 @@ void MovementUtils::WanderCalculate(KinematicStatus *state, KinematicSteering *s
 
     //linear to full acceleration in direction of orientation
     steering->acceleration = charOrient * maxAcceleration;
+}
+
+// Flocking
+
+static MathLib::Vec2 MovementUtils::FlockingAlignment(Agent& agent, const float maxRadius) {
+    MathLib::Vec2 v = {0.0f, 0.0f};
+    int neighborCount = 0;
+
+    for (auto a : agent.getAgentGroup()) {
+        if (a != &agent) {
+            const float distance = (a->getKinematic()->position - agent.getKinematic()->position).length();
+            if (distance < maxRadius) {
+                v = v + a->getKinematic()->velocity;
+                neighborCount++;
+            }
+        }
+    }
+
+    if (neighborCount == 0) {
+        return v;
+    }
+
+    v = v / neighborCount;
+
+    return v.normalized();
+}
+
+MathLib::Vec2 MovementUtils::FlockingCohesion(Agent &agent, const float maxRadius) {
+    MathLib::Vec2 v = {0.0f, 0.0f};
+    int neighborCount = 0;
+
+    for (auto a : agent.getAgentGroup()) {
+        if (a != &agent) {
+            const float distance = (a->getKinematic()->position - agent.getKinematic()->position).length();
+            if (distance < maxRadius) {
+                v = v + a->getKinematic()->position;
+                neighborCount++;
+            }
+        }
+    }
+
+    if (neighborCount == 0) {
+        return v;
+    }
+
+    v = v / neighborCount;
+
+    v = v - agent.getKinematic()->position;
+
+    return v.normalized();
+}
+
+static MathLib::Vec2 MovementUtils::FlockingSeparation(Agent& agent, const float maxRadius) {
+    MathLib::Vec2 v = {0.0f, 0.0f};
+    int neighborCount = 0;
+
+    for (auto a : agent.getAgentGroup()) {
+        if (a != &agent) {
+            const MathLib::Vec2 direction = a->getKinematic()->position - agent.getKinematic()->position;
+            const float distance = direction.length();
+            if (distance < maxRadius) {
+                v = v + direction;
+                neighborCount++;
+            }
+        }
+    }
+
+    if (neighborCount == 0) {
+        return v;
+    }
+
+    v = v / neighborCount;
+    v = v * -1;
+
+    return v.normalized();
 }
