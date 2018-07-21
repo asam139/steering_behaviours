@@ -110,7 +110,7 @@ void MovementUtils::WanderCalculate(KinematicStatus *state, KinematicSteering *s
 
 // Flocking
 
-static MathLib::Vec2 MovementUtils::FlockingAlignment(Agent& agent, const float maxRadius) {
+MathLib::Vec2 MovementUtils::FlockingAlignment(Agent& agent, const float maxRadius) {
     MathLib::Vec2 v = {0.0f, 0.0f};
     int neighborCount = 0;
 
@@ -158,7 +158,7 @@ MathLib::Vec2 MovementUtils::FlockingCohesion(Agent &agent, const float maxRadiu
     return v.normalized();
 }
 
-static MathLib::Vec2 MovementUtils::FlockingSeparation(Agent& agent, const float maxRadius) {
+MathLib::Vec2 MovementUtils::FlockingSeparation(Agent& agent, const float maxRadius) {
     MathLib::Vec2 v = {0.0f, 0.0f};
     int neighborCount = 0;
 
