@@ -110,10 +110,10 @@ class Body {
     const float _wanderRadius { 20.0f };
     const float _wanderRate { 2.0f };
 
-    const float _flockingRadius { 50.0f };
-    const float _alignmentWeight { 0.2f };
-    const float _cohesionWeight { 0.1f };
-    const float _separationWeight { 0.5f };
+    const float _flockingRadius { 25.0f };
+    const float _alignmentWeight { 0.3f };
+    const float _cohesionWeight { 0.5f };
+    const float _separationWeight { 0.8f };
 
     struct {
       struct {

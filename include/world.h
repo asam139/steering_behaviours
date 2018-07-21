@@ -63,6 +63,13 @@ public:
 
     Agent* target() { return &target_; }
     Agent* ia() { return &ia_; }
+
+    void setAISteering(Body::SteeringMode steering) {
+        ia()->setSteering(steering);
+        for (auto a : _agentArray) {
+            a->setSteering(steering);
+        }
+    }
 private:
     std::vector< std::shared_ptr< Agent > > _agentArray;
     Agent target_, ia_;
