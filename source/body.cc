@@ -51,10 +51,13 @@ void Body::updateAutonomous(const float dt) {
         case SteeringMode::Pursue: update_pursue(dt); break;
         case SteeringMode::Face: update_face(dt); break;
         case SteeringMode::LookGoing: update_lookgoing(dt); break;
+        case SteeringMode::Wander: update_wander(dt); break;
         default: update_kinematic_seek(dt); break;
     }
 
     _sprite.setPosition(_state.position.x(), _state.position.y());
+
+    keepInBounds();
 }
 
 void Body::updateManual(const float dt) {
@@ -346,6 +349,21 @@ void Body::update_lookgoing(const float dt) {
     //MovementUtils::SeekCalculate(&_state, _target->getKinematic(), &_steering, _maxSpeed);
 
     MovementUtils::LookGoingCalculate(&_state, _target->getKinematic(), &_steering, _maxRotation, _slowAngle, _fixedTime);
+
+    updateKinematic(dt, _steering);
+
+    dd.green.pos = _state.position;
+    dd.green.v = _state.velocity * 25.0f;
+
+    dd.red.pos = _state.position;
+    dd.red.v = _state.acceleration * 50.0f;
+
+    dd.blue.pos = _state.position;
+    dd.blue.v = {0.0f, 0.0f};
+}
+
+void Body::update_wander(const float dt) {
+    MovementUtils::WanderCalculate(&_state, &_steering, _wanderOffset, _wanderRadius, _wanderRate, _maxAcceleration, _maxRotation, _slowAngle, _fixedTime);
 
     updateKinematic(dt, _steering);
 

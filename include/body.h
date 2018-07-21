@@ -77,6 +77,7 @@ class Body {
     void update_pursue(const float dt);
     void update_face(const float dt);
     void update_lookgoing(const float dt);
+    void update_wander(const float dt);
 
     Sprite _sprite;
     Type _type;
@@ -94,6 +95,10 @@ class Body {
     const float _slowAngle { M_PI / 8.0f };
     const float _fixedTime { 5.f };
     const float _maxPrediction { 5.0f };
+
+    const float _wanderOffset { 50.0f };
+    const float _wanderRadius { 20.0f };
+    const float _wanderRate { 2.0f };
 
     struct {
       struct {

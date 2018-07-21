@@ -3,6 +3,7 @@
 //
 
 #include "movementUtils.h"
+#import <debug_draw.h>
 #include <mathlib/vec2.h>
 
 void MovementUtils::SeekCalculate(KinematicStatus *state, const KinematicStatus *targetState, KinematicSteering* steering,
@@ -61,7 +62,7 @@ void MovementUtils::FaceCalculate(KinematicStatus *state, const KinematicStatus 
 }
 
 void MovementUtils::LookGoingCalculate(KinematicStatus *state, const KinematicStatus *targetState, KinematicSteering* steering,
-                                       const float maxRotation, const float slowAngle, float fixedTime) {
+                                       const float maxRotation, const float slowAngle, const float fixedTime) {
     if (state->velocity.length() == 0) { //no movement
         steering->angularAcceleration = 0.0f;
         return;
@@ -72,4 +73,36 @@ void MovementUtils::LookGoingCalculate(KinematicStatus *state, const KinematicSt
 
     //delegate to align behavior with new target
     MovementUtils::AlignCalculate(state, &new_target, steering, maxRotation, slowAngle, fixedTime);
+}
+
+void MovementUtils::WanderCalculate(KinematicStatus *state, KinematicSteering *steering,
+                                    const float wanderOffset, const float wanderRadius,
+                                    const float wanderRate, const float maxAcceleration,
+                                    const float maxRotation, const float slowAngle, float fixedTime) {
+    //update wander orientation, rate * binomial distribution
+    float wanderOrientation = state->orientation;
+    wanderOrientation += wanderRate * randomFloat(-1.0f, 1.0f);
+
+    KinematicStatus new_target;
+    //orientation of new target facing combinated orientation
+    new_target.orientation = wanderOrientation + state->orientation;
+
+    MathLib::Vec2 charOrient; //orientation of character as vector
+    charOrient.fromPolar(1.0f, state->orientation);
+    MathLib::Vec2 targetOrient; //orientation of new target as vector
+    targetOrient.fromPolar(1.0f, new_target.orientation);
+
+    //the center of the circle
+    new_target.position = state->position + (charOrient * wanderOffset);
+
+    //position of the target in the circle
+    new_target.position += targetOrient * wanderRadius;
+
+    DebugDraw::drawCross(new_target.position, 0x00, 0x00, 0xFF, 0xFF);
+
+    //delegate to face behavior
+    FaceCalculate(state, &new_target, steering, maxRotation, slowAngle, fixedTime);
+
+    //linear to full acceleration in direction of orientation
+    steering->acceleration = charOrient * maxAcceleration;
 }
