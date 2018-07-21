@@ -11,6 +11,8 @@
 #include <sprite.h>
 #include <defines.h>
 #include <mathlib/vec2.h>
+#include <vector>
+
 using MathLib::Vec2;
 
 class Agent;
@@ -54,6 +56,12 @@ class Body {
 
     void setTarget(Agent* target);
     void setSteering(const SteeringMode steering) { _steering_mode = steering; };
+    void setAgentGroup(std::vector<Agent *> agentGroup) {
+        _agentGroup = agentGroup;
+    }
+    std::vector<Agent *> getAgentGroup() {
+        return _agentGroup;
+    }
     const KinematicStatus* getKinematic() const { return &_state; }
     KinematicStatus* getKinematic() { return &_state; }
   private:
@@ -84,6 +92,7 @@ class Body {
     Color _color;
     SteeringMode _steering_mode;
     Agent* _target;
+    std::vector<Agent *> _agentGroup;
 
     const float _maxSpeed { 5.f };
     const float _maxAcceleration { 1.0f};

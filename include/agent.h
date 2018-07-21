@@ -26,6 +26,12 @@ public:
     void shutdown();
 
     void setSteering(Body::SteeringMode steering) { body_.setSteering(steering); }
+    void setAgentGroup(std::vector<Agent *> agentGroup) {
+        body_.setAgentGroup(agentGroup);
+    }
+    std::vector<Agent *> getAgentGroup() {
+        return body_.getAgentGroup();
+    }
     const KinematicStatus* getKinematic() const { return body_.getKinematic(); }
     KinematicStatus* getKinematic() { return body_.getKinematic(); }
 private:
