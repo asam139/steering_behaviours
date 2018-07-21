@@ -322,8 +322,10 @@ void Body::update_pursue(const float dt) {
 }
 
 void Body::update_lookgoing(const float dt) {
-    //MovementUtils::PursueCalculate(&_state, _target->getKinematic(), &_steering, _maxSpeed, _maxPrediction);
-    MovementUtils::SeekCalculate(&_state, _target->getKinematic(), &_steering, _maxSpeed);
+    // Add movement to see direction changed
+    MovementUtils::PursueCalculate(&_state, _target->getKinematic(), &_steering, _maxSpeed, _maxPrediction);
+    //MovementUtils::SeekCalculate(&_state, _target->getKinematic(), &_steering, _maxSpeed);
+
     MovementUtils::LookGoingCalculate(&_state, _target->getKinematic(), &_steering, _maxRotation, _slowAngle, _fixedTime);
 
     updateKinematic(dt, _steering);
