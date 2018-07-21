@@ -27,15 +27,13 @@ public:
         const float _h = WINDOW_HEIGHT * 0.5;
         ia_.getKinematic()->position = Vec2(_w, _h);
 
-        _agentArray_ptr = std::unique_ptr<std::vector<Agent *>>(new std::vector<Agent *>());
-
-
         for (int i = 0; i < 5; ++i) {
-            Agent agent;
-            agent.init(this, Body::Color::Blue, Body::Type::Autonomous);
-            agent.getKinematic()->position = Vec2(_w  + randomFloat(-1, 1) * 10, _h + randomFloat(-1, 1) * 10);
-            agent.setAgentGroup(*_agentArray_ptr);
-            _agentArray_ptr->push_back(&ia_);
+            auto agent_ptr = std::shared_ptr<Agent>(new Agent());
+
+            agent_ptr->init(this, Body::Color::Blue, Body::Type::Autonomous);
+            agent_ptr->getKinematic()->position = Vec2(_w  + randomFloat(-1, 1) * 10, _h + randomFloat(-1, 1) * 10);
+            agent_ptr->setAgentGroup(&_agentArray);
+            _agentArray.push_back(agent_ptr);
         }
     };
     ~World() {
@@ -49,7 +47,7 @@ public:
     Agent* target() { return &target_; }
     Agent* ia() { return &ia_; }
 private:
-    std::unique_ptr<std::vector<Agent *>> _agentArray_ptr;
+    std::vector< std::shared_ptr< Agent > > _agentArray;
     Agent target_, ia_;
 };
 

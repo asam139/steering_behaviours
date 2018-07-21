@@ -50,16 +50,16 @@ class Body {
     Body() {};
     ~Body() {};
 
-    void init(const Color color, const Type type);
+    void init(const Color color, const Type type, Agent *agent);
     void update(const float dt);
     void render() const;
 
     void setTarget(Agent* target);
     void setSteering(const SteeringMode steering) { _steering_mode = steering; };
-    void setAgentGroup(std::vector<Agent *> agentGroup) {
+    void setAgentGroup(std::vector<std::shared_ptr<Agent>>* agentGroup) {
         _agentGroup = agentGroup;
     }
-    std::vector<Agent *> getAgentGroup() {
+    std::vector<std::shared_ptr<Agent>>*  getAgentGroup() {
         return _agentGroup;
     }
     const KinematicStatus* getKinematic() const { return &_state; }
@@ -91,8 +91,9 @@ class Body {
     Type _type;
     Color _color;
     SteeringMode _steering_mode;
+    Agent* _agent;
     Agent* _target;
-    std::vector<Agent *> _agentGroup;
+    std::vector< std::shared_ptr<Agent>> *_agentGroup;
 
     const float _maxSpeed { 5.f };
     const float _maxAcceleration { 1.0f};
@@ -108,6 +109,11 @@ class Body {
     const float _wanderOffset { 50.0f };
     const float _wanderRadius { 20.0f };
     const float _wanderRate { 2.0f };
+
+    const float _flockingRadius { 25.0f };
+    const float _alignmentWeight { 0.0f };
+    const float _cohesionWeight { 0.0f };
+    const float _separationWeight { 0.0f };
 
     struct {
       struct {

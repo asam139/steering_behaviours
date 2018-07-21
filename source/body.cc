@@ -11,9 +11,10 @@
 #include <agent.h>
 #include <movementUtils.h>
 
-void Body::init(const Color color, const Type type) {
+void Body::init(const Color color, const Type type, Agent* agent) {
     _type = type;
     _color = color;
+    _agent = agent;
 
     switch(color) {
         case Color::Green: _sprite.loadFromFile(AGENT_GREEN_PATH); break;
@@ -122,6 +123,18 @@ void Body::updateKinematic(const float dt, const KinematicSteering& steering) {
         _state.angularAcceleration = sign(_state.angularAcceleration) * _maxAngularSpeed;
     }
     _state.orientation += _state.angularAcceleration * dt;
+
+    //Flocking
+    if (_agentGroup != nullptr) {
+        Vec2 aligment = MovementUtils::FlockingAlignment(*_agent, _flockingRadius);
+        Vec2 cohesion = MovementUtils::FlockingCohesion(*_agent, _flockingRadius);
+        Vec2 separation = MovementUtils::FlockingSeparation(*_agent, _flockingRadius);
+
+        _state.velocity = _state.velocity + aligment * _alignmentWeight + cohesion * _cohesionWeight + separation * _separationWeight;
+        if (_state.velocity.length() > _maxSpeed) {
+            _state.velocity = _state.velocity.normalized() * _maxSpeed;
+        }
+    }
 }
 
 void Body::update_kinematic_seek(const float dt) {
@@ -376,3 +389,6 @@ void Body::update_wander(const float dt) {
     dd.blue.pos = _state.position;
     dd.blue.v = {0.0f, 0.0f};
 }
+
+
+// Flocking

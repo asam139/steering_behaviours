@@ -4,7 +4,7 @@
 
 #include "movementUtils.h"
 #import <debug_draw.h>
-#include <Agent.h>
+#include <agent.h>
 #include <mathlib/vec2.h>
 
 void MovementUtils::SeekCalculate(KinematicStatus *state, const KinematicStatus *targetState, KinematicSteering* steering,
@@ -114,8 +114,9 @@ MathLib::Vec2 MovementUtils::FlockingAlignment(Agent& agent, const float maxRadi
     MathLib::Vec2 v = {0.0f, 0.0f};
     int neighborCount = 0;
 
-    for (auto a : agent.getAgentGroup()) {
-        if (a != &agent) {
+    std::vector< std::shared_ptr<Agent>>* agentGroup = agent.getAgentGroup();
+    for (auto a : *agentGroup) {
+        if (a.get() != &agent) {
             const float distance = (a->getKinematic()->position - agent.getKinematic()->position).length();
             if (distance < maxRadius) {
                 v = v + a->getKinematic()->velocity;
@@ -137,8 +138,9 @@ MathLib::Vec2 MovementUtils::FlockingCohesion(Agent &agent, const float maxRadiu
     MathLib::Vec2 v = {0.0f, 0.0f};
     int neighborCount = 0;
 
-    for (auto a : agent.getAgentGroup()) {
-        if (a != &agent) {
+    std::vector< std::shared_ptr<Agent>>* agentGroup = agent.getAgentGroup();
+    for (auto &a : *agentGroup) {
+        if (a.get() != &agent) {
             const float distance = (a->getKinematic()->position - agent.getKinematic()->position).length();
             if (distance < maxRadius) {
                 v = v + a->getKinematic()->position;
@@ -162,8 +164,9 @@ MathLib::Vec2 MovementUtils::FlockingSeparation(Agent& agent, const float maxRad
     MathLib::Vec2 v = {0.0f, 0.0f};
     int neighborCount = 0;
 
-    for (auto a : agent.getAgentGroup()) {
-        if (a != &agent) {
+    std::vector< std::shared_ptr<Agent>>* agentGroup = agent.getAgentGroup();
+    for (auto a : *agentGroup) {
+        if (a.get() != &agent) {
             const MathLib::Vec2 direction = a->getKinematic()->position - agent.getKinematic()->position;
             const float distance = direction.length();
             if (distance < maxRadius) {
