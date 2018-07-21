@@ -9,7 +9,6 @@
 #include <defines.h>
 #include <debug_draw.h>
 #include <agent.h>
-#include <utils.h>
 #include <movementUtils.h>
 
 void Body::init(const Color color, const Type type) {
@@ -50,6 +49,7 @@ void Body::updateAutonomous(const float dt) {
         case SteeringMode::Align: update_align(dt); break;
         case SteeringMode::Velocity_Matching: update_velocity_matching(dt); break;
         case SteeringMode::Pursue: update_pursue(dt); break;
+        case SteeringMode::LookGoing: update_lookgoing(dt); break;
         default: update_kinematic_seek(dt); break;
     }
 
@@ -254,7 +254,7 @@ void Body::update_kinematic_wander(const float dt) {
 
     // rotate to random (binomial distribution around 0)
     _steering.acceleration = {0.0f, 0.0f};
-    _steering.angularAcceleration = _maxRotation * RandomFloat(-1.0f, 1.0f);
+    _steering.angularAcceleration = _maxRotation * randomFloat(-1.0f, 1.0f);
 
     updateKinematic(dt, _steering);
 
@@ -269,18 +269,7 @@ void Body::update_kinematic_wander(const float dt) {
 }
 
 void Body::update_align(const float dt) {
-    //rotation between character and target wrapped to (-PI, PI)
-    const float rotation = WrapPosNegPI(_target->getKinematic()->orientation - _state.orientation);
-    const float rotation_size = abs(rotation); //absolute value of rotation
-    float target_rotation = _maxRotation; //max
-    if (rotation_size < _slowAngle) { //inside the slow zone
-        //speed of rotation slowing down
-        target_rotation = (_maxRotation * rotation_size) / _slowAngle;
-    }
-    target_rotation *= sign(rotation); //positive or negative
-    //angular acceleration adjusted to time
-    _steering.angularAcceleration = (target_rotation) / _fixedTime;
-    _steering.acceleration = {0.0f, 0.0f};
+    MovementUtils::AlignCalculate(&_state, _target->getKinematic(), &_steering, _maxRotation, _slowAngle, _fixedTime);
 
     _state.velocity = {0.0f, 0.0f};
     updateKinematic(dt, _steering);
@@ -318,19 +307,25 @@ void Body::update_velocity_matching(const float dt) {
 }
 
 void Body::update_pursue(const float dt) {
-    //distance to the target
-    const float distance = (_target->getKinematic()->position - _state.position).length();
-    float speed = _state.velocity.length(); //speed of character
-    float prediction = _maxPrediction; //max prediction
-    if (speed > (distance / _maxPrediction)) { //reasonable predicion
-        prediction = distance / speed; //calc predicion time
-    }
-    KinematicStatus new_target = *_target->getKinematic(); //new target
-    //position of new target
-    new_target.position += _target->getKinematic()->velocity * prediction;
+    MovementUtils::PursueCalculate(&_state, _target->getKinematic(), &_steering, _maxSpeed, _maxPrediction);
 
-    //delegate to seek behavior with new target
-    MovementUtils::SeekCalculate(&_state, &new_target, &_steering, _maxSpeed);
+    updateKinematic(dt, _steering);
+
+    dd.green.pos = _state.position;
+    dd.green.v = _state.velocity * 25.0f;
+
+    dd.red.pos = _state.position;
+    dd.red.v = _state.acceleration * 50.0f;
+
+    dd.blue.pos = _state.position;
+    dd.blue.v = {0.0f, 0.0f};
+}
+
+void Body::update_lookgoing(const float dt) {
+    //MovementUtils::PursueCalculate(&_state, _target->getKinematic(), &_steering, _maxSpeed, _maxPrediction);
+    MovementUtils::SeekCalculate(&_state, _target->getKinematic(), &_steering, _maxSpeed);
+    MovementUtils::LookGoingCalculate(&_state, _target->getKinematic(), &_steering, _maxRotation, _slowAngle, _fixedTime);
+
     updateKinematic(dt, _steering);
 
     dd.green.pos = _state.position;

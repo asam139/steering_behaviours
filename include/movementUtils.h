@@ -10,7 +10,15 @@
 
 class MovementUtils {
 public:
-    static void SeekCalculate(KinematicStatus *state, const KinematicStatus *targetState, KinematicSteering* steering, const float maxSpeed);
+    static void SeekCalculate(KinematicStatus *state, const KinematicStatus *targetState, KinematicSteering* steering,
+                              const float maxSpeed);
+
+    static void AlignCalculate(KinematicStatus *state, const KinematicStatus *targetState, KinematicSteering* steering,
+                               const float maxRotation, const float slowAngle, float fixedTime);
+    static void PursueCalculate(KinematicStatus *state, const KinematicStatus *targetState, KinematicSteering* steering,
+                                const float maxSpeed, const float maxPrediction);
+    static void LookGoingCalculate(KinematicStatus *state, const KinematicStatus *targetState, KinematicSteering* steering,
+                                   const float maxRotation, const float slowAngle, float fixedTime);
 };
 
 
