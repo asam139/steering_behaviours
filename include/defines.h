@@ -8,6 +8,7 @@
 #ifndef __DEFINES_H__
 #define __DEFINES_H__ 1
 
+#include <math.h>
 #include <algorithm>
 #include <mathlib/vec2.h>
 

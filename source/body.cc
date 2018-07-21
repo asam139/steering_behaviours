@@ -10,6 +10,7 @@
 #include <debug_draw.h>
 #include <agent.h>
 #include <utils.h>
+#include <movementUtils.h>
 
 void Body::init(const Color color, const Type type) {
     _type = type;
@@ -48,6 +49,7 @@ void Body::updateAutonomous(const float dt) {
         case SteeringMode::Arrive: update_arrive(dt); break;
         case SteeringMode::Align: update_align(dt); break;
         case SteeringMode::Velocity_Matching: update_velocity_matching(dt); break;
+        case SteeringMode::Pursue: update_pursue(dt); break;
         default: update_kinematic_seek(dt); break;
     }
 
@@ -119,11 +121,7 @@ void Body::updateKinematic(const float dt, const KinematicSteering& steering) {
 }
 
 void Body::update_kinematic_seek(const float dt) {
-    _state.acceleration = {0.0f, 0.0f};
-    _state.velocity = (_target->getKinematic()->position - _state.position).normalized() * _maxSpeed;
-
-    _steering.acceleration = {0.0f, 0.0f};
-    _steering.angularAcceleration = 0.0f;
+    MovementUtils::SeekCalculate(&_state, _target->getKinematic(), &_steering, _maxSpeed);
 
     updateKinematic(dt, _steering);
 
@@ -317,4 +315,20 @@ void Body::update_velocity_matching(const float dt) {
 
     dd.blue.pos = _state.position;
     dd.blue.v = {0.0f, 0.0f};
+}
+
+void Body::update_pursue(const float dt) {
+    //distance to the target
+    const float distance = (_target->getKinematic()->position - _state.position).length();
+    float speed = _state.velocity.length(); //speed of character
+    float prediction = _maxPrediction; //max prediction
+    if (speed > (distance / _maxPrediction)) { //reasonable predicion
+        prediction = distance / speed; //calc predicion time
+    }
+    KinematicStatus new_target = *_target->getKinematic(); //new target
+    //position of new target
+    new_target.position += _target->getKinematic()->velocity * prediction;
+    //delegate to seek behavior with new target
+
+    MovementUtils::SeekCalculate(&_state, _target->getKinematic(), &_steering, _maxSpeed);
 }

@@ -74,6 +74,7 @@ class Body {
     void update_kinematic_wander(const float dt);
     void update_align(const float dt);
     void update_velocity_matching(const float dt);
+    void update_pursue(const float dt);
 
     Sprite _sprite;
     Type _type;
@@ -90,6 +91,7 @@ class Body {
     const float _slowRadius { 100.0f };
     const float _slowAngle { M_PI / 8.0f };
     const float _fixedTime { 50.f };
+    const float _maxPrediction { 2.0f };
 
     struct {
       struct {
