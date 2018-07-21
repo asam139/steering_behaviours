@@ -17,6 +17,8 @@ public:
                                const float maxRotation, const float slowAngle, float fixedTime);
     static void PursueCalculate(KinematicStatus *state, const KinematicStatus *targetState, KinematicSteering* steering,
                                 const float maxSpeed, const float maxPrediction);
+    static void FaceCalculate(KinematicStatus *state, const KinematicStatus *targetState, KinematicSteering* steering,
+                                      const float maxRotation, const float slowAngle, float fixedTime);
     static void LookGoingCalculate(KinematicStatus *state, const KinematicStatus *targetState, KinematicSteering* steering,
                                    const float maxRotation, const float slowAngle, float fixedTime);
 };

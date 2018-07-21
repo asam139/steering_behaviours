@@ -75,6 +75,7 @@ class Body {
     void update_align(const float dt);
     void update_velocity_matching(const float dt);
     void update_pursue(const float dt);
+    void update_face(const float dt);
     void update_lookgoing(const float dt);
 
     Sprite _sprite;
@@ -91,7 +92,7 @@ class Body {
     const float _minDistance { 5.0f }; //squared radius
     const float _slowRadius { 100.0f };
     const float _slowAngle { M_PI / 8.0f };
-    const float _fixedTime { 15.f };
+    const float _fixedTime { 5.f };
     const float _maxPrediction { 5.0f };
 
     struct {

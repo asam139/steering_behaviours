@@ -48,6 +48,18 @@ void MovementUtils::PursueCalculate(KinematicStatus *state, const KinematicStatu
     MovementUtils::SeekCalculate(state, &new_target, steering, maxSpeed);
 }
 
+void MovementUtils::FaceCalculate(KinematicStatus *state, const KinematicStatus *targetState, KinematicSteering* steering,
+                              const float maxRotation, const float slowAngle, float fixedTime) {
+    //direction to target
+    const MathLib::Vec2 direction = targetState->position - state->position;
+    KinematicStatus new_target = *targetState; //new target
+    //orientation of new target facing direction
+    new_target.orientation = atan2(direction.y(), direction.x());
+
+    //delegate to align behavior with new target
+    MovementUtils::AlignCalculate(state, &new_target, steering, maxRotation, slowAngle, fixedTime);
+}
+
 void MovementUtils::LookGoingCalculate(KinematicStatus *state, const KinematicStatus *targetState, KinematicSteering* steering,
                                        const float maxRotation, const float slowAngle, float fixedTime) {
     if (state->velocity.length() == 0) { //no movement

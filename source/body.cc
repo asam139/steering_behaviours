@@ -49,6 +49,7 @@ void Body::updateAutonomous(const float dt) {
         case SteeringMode::Align: update_align(dt); break;
         case SteeringMode::Velocity_Matching: update_velocity_matching(dt); break;
         case SteeringMode::Pursue: update_pursue(dt); break;
+        case SteeringMode::Face: update_face(dt); break;
         case SteeringMode::LookGoing: update_lookgoing(dt); break;
         default: update_kinematic_seek(dt); break;
     }
@@ -308,6 +309,24 @@ void Body::update_velocity_matching(const float dt) {
 
 void Body::update_pursue(const float dt) {
     MovementUtils::PursueCalculate(&_state, _target->getKinematic(), &_steering, _maxSpeed, _maxPrediction);
+
+    updateKinematic(dt, _steering);
+
+    dd.green.pos = _state.position;
+    dd.green.v = _state.velocity * 25.0f;
+
+    dd.red.pos = _state.position;
+    dd.red.v = _state.acceleration * 50.0f;
+
+    dd.blue.pos = _state.position;
+    dd.blue.v = {0.0f, 0.0f};
+}
+
+void Body::update_face(const float dt) {
+    // Add movement to see direction changed
+    MovementUtils::PursueCalculate(&_state, _target->getKinematic(), &_steering, _maxSpeed, _maxPrediction);
+    //MovementUtils::SeekCalculate(&_state, _target->getKinematic(), &_steering, _maxSpeed);
+    MovementUtils::FaceCalculate(&_state, _target->getKinematic(), &_steering, _maxRotation, _slowAngle, _fixedTime);
 
     updateKinematic(dt, _steering);
 
