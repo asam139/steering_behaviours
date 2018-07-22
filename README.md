@@ -8,3 +8,5 @@ They are not based on complex strategies involving path planning or global calcu
 but instead use local information, such as neighbours forces. 
 This makes them simple to understand and implement, 
 but still able to produce very complex movement patterns.
+
+Video: https://www.youtube.com/watch?v=Zk2B0dk5vHY
