@@ -1,6 +1,6 @@
 # steering_behaviours
 
-Steering behaviors aim to help autonomous characters move in a realistic manner, 
+Steering behaviours aim to help autonomous characters move in a realistic manner, 
 by using simple forces that are combined to produce life-like, 
 improvisational navigation around the characters' environment. 
 
