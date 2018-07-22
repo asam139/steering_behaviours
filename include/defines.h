@@ -39,14 +39,14 @@ struct KinematicStatus {
     MathLib::Vec2 position { 0.0f, 0.0f };
     MathLib::Vec2 velocity { 0.0f, 0.0f }; //linear velocity
     MathLib::Vec2 acceleration { 0.0f, 0.0f }; //linear acceleration
-    float orientation;
-    float angularAcceleration; //angular velocity
-    float speed; // for manual movement
+    float orientation = 0;
+    float angularAcceleration = 0; //angular velocity
+    float speed = 0; // for manual movement
 };
 
 struct KinematicSteering {
     MathLib::Vec2 acceleration { 0.0f, 0.0f }; //linear velocity
-    float angularAcceleration; //angular velocity
+    float angularAcceleration = 0; //angular velocity
 };
 
 

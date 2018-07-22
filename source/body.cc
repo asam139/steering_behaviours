@@ -113,7 +113,7 @@ void Body::updateKinematic(const float dt, const KinematicSteering& steering) {
         Vec2 cohesion = MovementUtils::FlockingCohesion(*_agent, _flockingRadius);
         Vec2 separation = MovementUtils::FlockingSeparation(*_agent, _flockingRadius);
 
-        _state.velocity = _state.velocity + aligment * _alignmentWeight + cohesion * _cohesionWeight + separation * _separationWeight;
+        _state.velocity = _state.velocity + (aligment * _alignmentWeight + cohesion * _cohesionWeight + separation * _separationWeight) * dt;
         if (_state.velocity.length() > _maxSpeed) {
             _state.velocity = _state.velocity.normalized() * _maxSpeed;
         }

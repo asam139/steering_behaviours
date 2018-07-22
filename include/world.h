@@ -27,7 +27,7 @@ public:
         const float _h = WINDOW_HEIGHT * 0.5;
         ia_.getKinematic()->position = Vec2(_w, _h);
 
-        for (int i = 0; i < 5; ++i) {
+        for (int i = 0; i < 20; ++i) {
             auto agent_ptr = std::shared_ptr<Agent>(new Agent());
 
             agent_ptr->init(this, Body::Color::Blue, Body::Type::Autonomous);
